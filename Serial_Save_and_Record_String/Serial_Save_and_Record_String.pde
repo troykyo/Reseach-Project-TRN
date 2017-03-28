@@ -28,6 +28,7 @@ float inByte2 = 0;
 float prevInByte2 = 0;
 String[] list = {"troy was here"," and here"," and here"};
 String inString = "0";
+long frameNum=0;
 
 
 void setup () {
@@ -37,15 +38,16 @@ void setup () {
   // List all the available serial ports
   // if using Processing 2.1 or later, use Serial.printArray()
   println(Serial.list());
-  // I know that the first port in the serial list on my mac
+  // I know that the first port in the serial list-+  on my mac
   // is always my  Arduino, so I open Serial.list()[0].
   // Open whatever port is the one you're using.
-  myPort = new Serial(this, Serial.list()[2], 9600);
+  myPort = new Serial(this, Serial.list()[0], 9600);
 
   // don't generate a serialEvent() unless you get a newline character:
   myPort.bufferUntil('\n');
   // set inital background:
   background(0);
+  txt = createWriter("/media/solemaker/SOS/PressData/PressureSample" + year() + month() + day() + hour() + minute()+".csv"); 
 }
 
 void draw () {
@@ -67,7 +69,7 @@ void draw () {
   line(xPos, height, xPos, height - inByte2);//graph
 
   
- println(list[0]+ "' " + list[1]+ "' " + list[2]);
+ txt.println(list[0]+ ", " + list[1]+ ", " + list[2]+ ", " + millis());
 
   stroke(255);  
   for (int i = 1; i<5; i++) {
@@ -76,7 +78,8 @@ void draw () {
   // at the edge of the screen, go back to the beginning:
   if (xPos >= width) {
     xPos = 0;
-    saveFrame("line-######.png");
+    saveFrame("/media/solemaker/SOS/PressData/graph"+ year() + month() + day() + hour() + minute()+ frameNum +".png");
+    frameNum++;
     background(0);
   } else {
     // increment the horizontal position:
@@ -94,4 +97,3 @@ void serialEvent (Serial myPort) {
     inString = trim(inString);
   }
 }
-
